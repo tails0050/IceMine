@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="hu" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IceMine Network | Magyarország Legmenőbb Minecraft Közössége</title>
+  
+  <!-- Hivatalos IceMine Favicon -->
+  <link rel="icon" type="image/jpeg" href="314B5AB8-48AF-40BD-9796-81D9F01145CA.jpg">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            glacier: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              900: '#082f49',
+              deep: '#020b18',
+              surface: 'rgba(7, 24, 48, 0.75)',
+            }
+          },
+          boxShadow: {
+            'frost-glow': '0 0 30px rgba(56, 189, 248, 0.45)',
+            'frost-glow-lg': '0 0 50px rgba(56, 189, 248, 0.65)',
+            'frost-card': '0 8px 32px 0 rgba(2, 132, 199, 0.25)',
+          },
+          animation: {
+            'float-slow': 'float 5s ease-in-out infinite',
+            'pulse-subtle': 'pulseSubtle 2.5s infinite ease-in-out',
+            'shimmer': 'shimmer 2.2s infinite linear',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            pulseSubtle: {
+              '0%, 100%': { opacity: '0.9', transform: 'scale(1)' },
+              '50%': { opacity: '1', transform: 'scale(1.03)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Egyedi görgetősáv fagyos hatással */
+    ::-webkit-scrollbar {
+      width: 9px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020712;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #0284c7, #38bdf8);
+      border-radius: 6px;
+      border: 2px solid #020712;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #7dd3fc;
+    }
+
+    /* Fagyos háttér és üveghatások */
+    .frost-glass {
+      background: rgba(6, 20, 42, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+    }
+    .frost-glass-hover {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .frost-glass-hover:hover {
+      background: rgba(10, 31, 64, 0.85);
+      border-color: rgba(56, 189, 248, 0.55);
+      box-shadow: 0 10px 35px -5px rgba(56, 189, 248, 0.3);
+      transform: translateY(-4px);
+    }
+    .frost-badge {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(2, 132, 199, 0.08) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+    .frost-glow-text {
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.6), 0 0 45px rgba(2, 132, 199, 0.3);
+    }
+    .frost-logo-glow {
+      filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.6)) drop-shadow(0 0 75px rgba(2, 132, 199, 0.35));
+    }
+    #snow-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body class="bg-[#020712] text-slate-100 font-sans min-h-screen selection:bg-cyan-400 selection:text-slate-950 overflow-x-hidden relative">
+
+  <!-- Háttér Hóesés Canvas -->
+  <canvas id="snow-canvas"></canvas>
+
+  <!-- Lebegő SFX Hangvezérlő -->
+  <button id="soundToggle" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl frost-glass text-cyan-300 hover:text-white border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 shadow-frost-glow flex items-center gap-2.5 group" title="Hangeffektek be/kikapcsolása">
+    <i id="soundIcon" class="fa-solid fa-volume-high text-lg"></i>
+    <span class="text-xs font-mono font-bold hidden sm:inline group-hover:text-white">HANG BE</span>
+  </button>
+
+  <!-- Modern Értesítés (Toast) -->
+  <div id="toastNotification" class="fixed top-24 right-6 z-50 transform translate-x-40 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3.5 py-3.5 px-5 rounded-2xl frost-glass border border-cyan-400 shadow-frost-glow">
+    <div class="w-9 h-9 rounded-xl bg-cyan-400/20 text-cyan-300 flex items-center justify-center text-lg">
+      <i class="fa-solid fa-snowflake"></i>
+    </div>
+    <div>
+      <h4 id="toastTitle" class="text-xs font-bold font-mono tracking-wider text-cyan-300">SZERVER IP MÁSOLVA</h4>
+      <p id="toastBody" class="text-xs text-slate-300">play.icemine.hu bemásolható a Minecraftba!</p>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 w-full border-b border-cyan-900/40 frost-glass">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo képpel -->
+      <a href="#" class="flex items-center gap-3.5 group">
+        <div class="relative w-12 h-12 rounded-2xl p-1 bg-gradient-to-tr from-cyan-600 via-sky-400 to-white flex items-center justify-center shadow-frost-glow group-hover:rotate-3 group-hover:scale-105 transition-all duration-300 overflow-hidden">
+          <img src="314B5AB8-48AF-40BD-9796-81D9F01145CA.jpg" alt="IceMine Logo" class="w-full h-full object-cover rounded-xl" onerror="this.style.display='none'">
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-cyan-200 rounded-full animate-ping"></span>
+        </div>
+        <div>
+          <div class="font-cinzel text-2xl font-black tracking-wider text-white flex items-center">
+            ICE<span class="text-cyan-400 font-extrabold ml-0.5">MINE</span>
+          </div>
+          <span class="block text-[10px] uppercase font-mono tracking-widest text-cyan-300/80 -mt-1 font-semibold">Magyar Minecraft Hálózat</span>
+        </div>
+      </a>
+
+      <!-- Asztali Navigáció -->
+      <nav class="hidden md:flex items-center gap-7 font-medium text-sm text-slate-300">
+        <a href="#kezdolap" class="hover:text-cyan-300 transition-colors">Kezdőlap</a>
+        <a href="#jatekmokok" class="hover:text-cyan-300 transition-colors">Játékmódok</a>
+        <a href="#rangok" class="hover:text-cyan-300 transition-colors">Webshop & Rangok</a>
+        <a href="#ranglista" class="hover:text-cyan-300 transition-colors">Dicsőségcsarnok</a>
+        <a href="#gyik" class="hover:text-cyan-300 transition-colors">GYIK</a>
+        <a href="javascript:void(0)" onclick="openRulesModal()" class="hover:text-cyan-300 transition-colors">Szabályzat</a>
+      </nav>
+
+      <!-- Fejléc gombok -->
+      <div class="flex items-center gap-3">
+        <a href="https://discord.com" target="_blank" rel="noreferrer" class="hidden sm:flex items-center gap-2 py-2.5 px-3.5 rounded-xl border border-cyan-500/30 hover:bg-cyan-500/10 text-cyan-300 text-xs font-mono font-semibold transition-all">
+          <i class="fa-brands fa-discord text-base"></i>
+          <span>1,840 Online</span>
+        </a>
+        <button onclick="copyServerIp()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-500 hover:from-cyan-300 hover:to-sky-400 text-slate-950 font-bold text-xs tracking-wider shadow-frost-glow hover:shadow-frost-glow-lg transition-all duration-200 transform hover:-translate-y-0.5">
+          <i class="fa-solid fa-play mr-1.5"></i> JÁTSSZ MOST
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10">
+    <section id="kezdolap" class="relative pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
+      <!-- Fénycsóva háttérfény -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-cyan-500/15 rounded-full blur-[140px] pointer-events-none"></div>
+
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center relative z-10">
+        
+        <!-- Központi Ragyogó IceMine Logó Embléma - Tökéletesen középre igazítva -->
+        <div class="relative flex flex-col items-center justify-center mb-7 group">
+          <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/35 via-sky-400/25 to-blue-600/35 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+          <div class="relative w-40 h-40 sm:w-48 sm:h-48 rounded-3xl p-2.5 bg-gradient-to-b from-cyan-400/60 via-cyan-950/70 to-[#020b18] frost-glass shadow-frost-glow-lg border border-cyan-400/50 animate-float-slow flex items-center justify-center">
+            <img src="314B5AB8-48AF-40BD-9796-81D9F01145CA.jpg" alt="IceMine Hivatalos Kristály Logó" class="w-full h-full object-cover rounded-2xl frost-logo-glow transform group-hover:scale-105 transition-transform duration-300">
+            <span class="absolute -bottom-2.5 right-3 px-3 py-0.5 rounded-full bg-cyan-400 text-slate-950 font-mono font-black text-[10px] uppercase tracking-wider shadow-md">ONLINE</span>
+          </div>
+        </div>
+
+        <!-- Szezon infó címke - Középre rendezve -->
+        <div class="inline-flex items-center justify-center gap-2 py-1.5 px-4 rounded-full frost-badge text-cyan-300 text-xs font-mono uppercase tracking-wider mb-6 animate-pulse-subtle mx-auto">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Szezon V: Fagyos Ébredés Elindult!</span>
+          <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
+        </div>
+
+        <!-- Főcím és leírás -->
+        <h1 class="font-cinzel text-4xl sm:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-400 tracking-tight frost-glow-text mb-6 text-center">
+          MAGYARORSZÁG LEGMENŐBB<br class="hidden sm:inline"> MINECRAFT KÖZÖSSÉGE
+        </h1>
+        <p class="max-w-2xl mx-auto text-slate-300 text-sm sm:text-lg font-light leading-relaxed mb-10 text-center">
+          Készülj fel a fagyos kalandokra! Egyedi fejlesztésű játékmódok, havonta megújuló események és kiegyensúlyozott gazdaság.
+          <br class="hidden sm:inline">
+          <span class="text-cyan-300 font-medium">Támogatott verziók: 1.20 - 1.21.x (Java & Bedrock támogatás)</span>
+        </p>
+
+        <!-- Szerver Csatlakozási Doboz -->
+        <div class="w-full max-w-2xl mx-auto frost-glass rounded-3xl p-5 sm:p-6 shadow-frost-glow-lg border border-cyan-400/40 relative">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-4 text-left w-full sm:w-auto">
+              <div class="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center text-cyan-300 text-2xl shadow-inner">
+                <i class="fa-solid fa-satellite-dish"></i>
+              </div>
+              <div>
+                <p class="text-[11px] uppercase font-mono text-cyan-400 font-bold tracking-wider">Hivatalos Szerver IP Cím</p>
+                <div class="flex items-center gap-2">
+                  <span id="serverIpDisplay" class="font-mono text-xl sm:text-2xl font-black tracking-wider text-white">play.icemine.hu</span>
+                </div>
+                <p class="text-[11px] text-slate-400 font-mono">Bedrock Port: <span class="text-cyan-300 font-bold">19132</span></p>
+              </div>
+            </div>
+
+            <!-- IP Másolás Gomb -->
+            <button onclick="copyServerIp()" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-sm tracking-wider flex items-center justify-center gap-2.5 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-md">
+              <i class="fa-regular fa-clone text-base"></i>
+              <span>IP MÁSOLÁSA</span>
+            </button>
+          </div>
+
+          <!-- Elválasztó vonal -->
+          <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent my-4"></div>
+
+          <!-- Valósághű szimulált szerver mutatók -->
+          <div class="flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-300 px-2">
+            <div class="flex items-center gap-2.5">
+              <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+              <span>Online játékosok: <strong id="livePlayerCount" class="text-cyan-300 text-sm font-bold">384</strong> / 600</span>
+            </div>
+            
+            <div class="flex items-center gap-4 text-slate-400">
+              <span class="flex items-center gap-1.5 text-emerald-400">
+                <i class="fa-solid fa-wifi text-xs"></i>
+                <span id="livePing">18 ms</span>
+              </span>
+              <span>•</span>
+              <span class="text-cyan-300 font-semibold">20.0 TPS (Lag-mentes)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gyors Navigációs Akciógombok -->
+        <div class="flex flex-wrap justify-center items-center gap-4 mt-8">
+          <a href="#jatekmokok" class="px-6 py-3 rounded-xl frost-glass hover:border-cyan-400 text-slate-200 hover:text-white text-xs font-mono font-bold tracking-wider transition-all">
+            <i class="fa-solid fa-gamepad text-cyan-400 mr-2"></i> JÁTÉKMÓDOK
+          </a>
+          <a href="#rangok" class="px-6 py-3 rounded-xl frost-glass hover:border-cyan-400 text-slate-200 hover:text-white text-xs font-mono font-bold tracking-wider transition-all">
+            <i class="fa-solid fa-crown text-amber-400 mr-2"></i> RANGOK BÖNGÉSZÉSE
+          </a>
+          <a href="https://discord.com" target="_blank" class="px-6 py-3 rounded-xl bg-[#5865F2]/20 hover:bg-[#5865F2]/40 border border-[#5865F2]/50 text-indigo-200 hover:text-white text-xs font-mono font-bold tracking-wider transition-all">
+            <i class="fa-brands fa-discord mr-2"></i> DISCORD KÖZÖSSÉG
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="jatekmokok" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-xs font-mono font-bold tracking-widest text-cyan-400 uppercase">VÉGTELEN LEHETŐSÉGEK</span>
+        <h2 class="font-cinzel text-3xl sm:text-5xl font-black text-white mt-1">FAGYOS JÁTÉKMÓDJAINK</h2>
+        <p class="text-slate-400 text-xs sm:text-sm max-w-2xl mx-auto mt-3">
+          Minden szerverünk egyedi plugineket, testreszabott recepteket és folyamatos fejlesztéseket kap a maximális játékélményért.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Játékmód 1: Frost SMP -->
+        <div class="group frost-glass frost-glass-hover rounded-3xl p-6 flex flex-col justify-between border border-cyan-900/60 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center text-cyan-300 text-xl mb-4 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-tree"></i>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-cinzel text-xl font-bold text-white">Frost SMP</h3>
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">PVE / PVP</span>
+            </div>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              Túlélő élmény vad hóviharokkal, egyedi dungeon bossokkal, telekvédelemmel, klánháborúkkal és fagyos relikviákkal.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-cyan-900/50 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400"><i class="fa-solid fa-users text-cyan-400 mr-1"></i> 142 Játszik</span>
+            <button onclick="openModeDetail('Frost SMP', 'Egyedi Túlélő Élménypakk', 'A Frost SMP a legnépszerűbb szerverünk, ahol a klasszikus túlélést egyedi mechanikák egészítik ki: zúzmarás fagy-effektek, dungeon labirintusok, saját klánrendszer, aukciósház és kincskereső küldetések várnak.', ['Dungeon főellenségek', 'Klánvédelem és szövetségek', '100+ új enchanthoz hozzáférés', 'Valós gazdasági piac'])" class="text-cyan-300 hover:text-white font-bold">Részletek &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Játékmód 2: Glaciális SkyBlock -->
+        <div class="group frost-glass frost-glass-hover rounded-3xl p-6 flex flex-col justify-between border border-cyan-900/60 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all"></div>
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-sky-400/40 flex items-center justify-center text-sky-300 text-xl mb-4 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-cloud"></i>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-cinzel text-xl font-bold text-white">Glaciális SkyBlock</h3>
+              <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded font-bold">GAZDASÁG</span>
+            </div>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              Lebegő jégszigetek, automatizálható gyűjtő minionok, szintezhető képességek (McMMO) és havi szigetversenyek értékes díjakkal.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-cyan-900/50 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400"><i class="fa-solid fa-users text-cyan-400 mr-1"></i> 118 Játszik</span>
+            <button onclick="openModeDetail('Glaciális SkyBlock', 'Lebegő Jégsziget Birodalom', 'Kezdd el kalandodat egy fagyott szigeten! Fejleszd a határaidat egyedi minionokkal, készíts különleges generátorokat, kereskedj a többi játékossal és küzdj a ranglista éléért!', ['15 különböző sziget minion típus', 'Rúnás zúzókövek és generátorok', 'Havi Sziget Top nyeremények', 'Egyedi képességfa (Skills)'])" class="text-cyan-300 hover:text-white font-bold">Részletek &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Játékmód 3: Cryo Prison -->
+        <div class="group frost-glass frost-glass-hover rounded-3xl p-6 flex flex-col justify-between border border-cyan-900/60 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-indigo-400/40 flex items-center justify-center text-indigo-300 text-xl mb-4 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-gem"></i>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-cinzel text-xl font-bold text-white">Cryo Prison</h3>
+              <span class="text-[10px] font-mono text-indigo-400 bg-indigo-950/60 border border-indigo-500/30 px-2 py-0.5 rounded font-bold">OP BÁNYÁSZAT</span>
+            </div>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              Küzdd fel magad az A-tól Z-ig tartó fagyos bányákon keresztül! Robbanó csákányok, Prestige rangok, hátizsákok és gang-háborúk.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-cyan-900/50 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400"><i class="fa-solid fa-users text-cyan-400 mr-1"></i> 76 Játszik</span>
+            <button onclick="openModeDetail('Cryo Prison', 'Fagyos Mélységek Börtöne', 'Egy intenzív, pörgős börtön élmény! Bányássz ritka jeges kristályokat, fejleszd a csákányodra rakható robbanó varázslatokat, alapíts bandát és juss el a Szabadság kapujáig.', ['A-Z bányák + 50 Prestige szint', 'Robbanó & Lézer csákány effektek', 'Automata eladás és hátizsák bővítés', 'Banda bázisok és összecsapások'])" class="text-cyan-300 hover:text-white font-bold">Részletek &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Játékmód 4: Blizzard Minigames -->
+        <div class="group frost-glass frost-glass-hover rounded-3xl p-6 flex flex-col justify-between border border-cyan-900/60 relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-cyan-950/80 border border-blue-400/40 flex items-center justify-center text-blue-300 text-xl mb-4 group-hover:scale-110 transition-transform">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-cinzel text-xl font-bold text-white">Blizzard Games</h3>
+              <span class="text-[10px] font-mono text-amber-400 bg-amber-950/60 border border-amber-500/30 px-2 py-0.5 rounded font-bold">PVP ARÉNA</span>
+            </div>
+            <p class="text-slate-300 text-xs leading-relaxed mb-4">
+              Pörgős BedWars, Snow Spleef, Fagyos Duels és SkyWars egyedi jeges térképeken, azonnali meccskereső rendszerrel.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-cyan-900/50 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-400"><i class="fa-solid fa-users text-cyan-400 mr-1"></i> 48 Játszik</span>
+            <button onclick="openModeDetail('Blizzard Games', 'Versengő PvP Mini-játékok', 'A pörgős arénák világa! Teszteld a reflexeidet BedWars, Duels, Snow Spleef és The Bridge arénáinkban, gyűjts győzelmi pontokat és nyiss kozmetikai effekteket.', ['Azonnali lobby csatlakozás', 'Egyedi hógolyó és fagyasztó készletek', 'Részletes statisztika és ligák', 'Kozmetikai köpenyek és részecskék'])" class="text-cyan-300 hover:text-white font-bold">Részletek &rarr;</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="rangok" class="py-20 bg-gradient-to-b from-transparent via-[#031326]/70 to-transparent">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center mb-16">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-mono mb-2">
+            <i class="fa-solid fa-crown text-amber-400"></i> HIVATALOS WEBSHOP ÉS TÁMOGATÁS
+          </div>
+          <h2 class="font-cinzel text-3xl sm:text-5xl font-black text-white">SZERVER RANGOK</h2>
+          <p class="text-slate-400 max-w-xl mx-auto mt-3 text-xs sm:text-sm">
+            Támogasd a szerver fenntartását és infrastruktúráját! Minden rang örökös érvényességű, és azonnal aktiválódik.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
+          
+          <!-- Rang 1: Frost Rang -->
+          <div class="frost-glass rounded-3xl p-7 border border-cyan-900/80 flex flex-col justify-between hover:border-cyan-500/50 transition-all duration-300">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/80 px-2.5 py-1 rounded">I. SZINT</span>
+                <span class="text-xs text-slate-400 font-mono">ÖRÖKÖS</span>
+              </div>
+              <h3 class="font-cinzel text-2xl font-bold text-cyan-200">FROST RANG</h3>
+              <div class="my-4 flex items-baseline gap-1">
+                <span class="text-3xl font-extrabold font-mono text-white">1.490 Ft</span>
+                <span class="text-xs text-slate-400">/ egyszeri</span>
+              </div>
+              <p class="text-xs text-slate-300 mb-6">Kezdő kalandor csomag kényelmi parancsokkal és extra otthonokkal.</p>
+
+              <ul class="space-y-3 text-xs text-slate-300 mb-8">
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-400"></i>
+                  <span><b>[Frost]</b> rang előtag játékon belül és Discordon</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-400"></i>
+                  <span><b>/feed</b> & <b>/hat</b> parancsok elérése</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-400"></i>
+                  <span>3 beállítható otthon (Alapértelmezett: 1)</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-400"></i>
+                  <span>Sorbanállás átugrása teli szerver esetén</span>
+                </li>
+              </ul>
+            </div>
+            <button onclick="openPerkModal('Frost Rang', '1.490 Ft', ['Frost Prefix a chatben és a tablistán', '/feed parancs (éhség azonnali visszatöltése 10 perc cd)', '3 Otthon beállítása (/sethome)', '1.2x Pénz és EXP szorzó', '1x Heti Frost Ládakulcs'])" class="w-full py-3.5 rounded-2xl border border-cyan-500/40 hover:bg-cyan-500/20 text-cyan-300 font-bold text-xs font-mono tracking-wider transition-all">
+              ELŐNYÖK & VÁSÁRLÁS
+            </button>
+          </div>
+
+          <!-- Rang 2: Hóvihar (Blizzard) Rang - Legnépszerűbb -->
+          <div class="frost-glass rounded-3xl p-7 border-2 border-cyan-400 shadow-frost-glow flex flex-col justify-between relative transform md:-translate-y-3 bg-[#061f3d]/85">
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-400 to-sky-400 text-slate-950 font-black text-[11px] font-mono py-1 px-4 rounded-full uppercase tracking-wider shadow">
+              LEGNÉPSZERŰBB
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-sky-300 bg-sky-950/80 px-2.5 py-1 rounded">II. SZINT</span>
+                <span class="text-xs text-slate-400 font-mono">ÖRÖKÖS</span>
+              </div>
+              <h3 class="font-cinzel text-3xl font-extrabold text-white frost-glow-text">HÓVIHAR RANG</h3>
+              <div class="my-4 flex items-baseline gap-1">
+                <span class="text-4xl font-black font-mono text-cyan-300">2.990 Ft</span>
+                <span class="text-xs text-slate-400">/ egyszeri</span>
+              </div>
+              <p class="text-xs text-slate-200 mb-6">A legkedveltebb csomag: repülési lehetőség telekhatáron belül és hordozható ládák.</p>
+
+              <ul class="space-y-3 text-xs text-slate-200 mb-8">
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-300"></i>
+                  <span>Minden Frost rang előny benne van</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-300"></i>
+                  <span><b>/fly</b> repülés saját telken és szigeten</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-300"></i>
+                  <span><b>/craft</b> és <b>/enderchest</b> hordozható parancsok</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-cyan-300"></i>
+                  <span>6 otthon + 1.5x gazdasági szorzó</span>
+                </li>
+              </ul>
+            </div>
+            <button onclick="openPerkModal('Hóvihar Rang', '2.990 Ft', ['Minden Frost rang funkció', 'Állandó /fly repülés saját telken/szigeten', 'Hordozható /craft munkaasztal és /ec', '6 beállítható otthon (/sethome)', '1.5x Pénz és bányászat szorzó', 'Hóvihar aura részecske effekt'])" class="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 text-slate-950 font-black text-xs font-mono tracking-wider shadow-frost-glow transition-all">
+              HÓVIHAR MEGVÁSÁRLÁSA
+            </button>
+          </div>
+
+          <!-- Rang 3: Glaciális (Glacial) Rang -->
+          <div class="frost-glass rounded-3xl p-7 border border-cyan-900/80 flex flex-col justify-between hover:border-cyan-500/50 transition-all duration-300">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950/80 px-2.5 py-1 rounded">III. SZINT - ELIT</span>
+                <span class="text-xs text-slate-400 font-mono">ÖRÖKÖS</span>
+              </div>
+              <h3 class="font-cinzel text-2xl font-bold text-indigo-200">GLACIÁLIS RANG</h3>
+              <div class="my-4 flex items-baseline gap-1">
+                <span class="text-3xl font-extrabold font-mono text-white">5.490 Ft</span>
+                <span class="text-xs text-slate-400">/ egyszeri</span>
+              </div>
+              <p class="text-xs text-slate-300 mb-6">A legmagasabb rang: privát széfek, azonnali teleportálás és egyedi kozmetikák.</p>
+
+              <ul class="space-y-3 text-xs text-slate-300 mb-8">
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-indigo-400"></i>
+                  <span>Minden Frost & Hóvihar rang előny</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-indigo-400"></i>
+                  <span>15 otthon & 5 virtuális privát széf (<b>/pv</b>)</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-indigo-400"></i>
+                  <span>Teleport várakozási idő: 0 másodperc (Azonnali)</span>
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-check text-indigo-400"></i>
+                  <span>Exkluzív Jég Sárkány Szárnyak kozmetika</span>
+                </li>
+              </ul>
+            </div>
+            <button onclick="openPerkModal('Glaciális Rang', '5.490 Ft', ['Minden korábbi rang kiváltsága', 'Azonnali teleportálás (/tp várakozás nélkül)', '15 beállítható otthon', '5x /pv virtuális széf elérése bárhol', '2.0x Globális szorzó', 'Jégsárkány szárnyak animált részecske', 'Zárt Glaciális Discord VIP szoba'])" class="w-full py-3.5 rounded-2xl border border-indigo-400/50 hover:bg-indigo-500/20 text-indigo-200 font-bold text-xs font-mono tracking-wider transition-all">
+              ELŐNYÖK & VÁSÁRLÁS
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="ranglista" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-5">
+        <div>
+          <span class="text-xs font-mono font-bold tracking-widest text-cyan-400 uppercase">SZERVER STATISZTIKÁK</span>
+          <h2 class="font-cinzel text-3xl sm:text-4xl font-bold text-white mt-1">DICSŐSÉGCSARNOK</h2>
+          <p class="text-slate-400 text-xs sm:text-sm mt-1">Élőben szinkronizált adatok az IceMine összes szerveréről.</p>
+        </div>
+
+        <!-- Ranglista kategória váltó fülek -->
+        <div class="inline-flex p-1.5 rounded-2xl frost-glass border border-cyan-900/60 font-mono text-xs">
+          <button id="tabKills" onclick="switchLeaderboard('kills')" class="px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold transition-all">
+            <i class="fa-solid fa-skull mr-1.5"></i> Legtöbb Ölés
+          </button>
+          <button id="tabBalance" onclick="switchLeaderboard('balance')" class="px-4 py-2 rounded-xl text-slate-300 hover:text-white transition-all">
+            <i class="fa-solid fa-coins mr-1.5"></i> Leggazdagabbak
+          </button>
+          <button id="tabPlaytime" onclick="switchLeaderboard('playtime')" class="px-4 py-2 rounded-xl text-slate-300 hover:text-white transition-all">
+            <i class="fa-solid fa-clock mr-1.5"></i> Játékidő
+          </button>
+        </div>
+      </div>
+
+      <!-- Táblázat konténer -->
+      <div class="frost-glass rounded-3xl overflow-hidden border border-cyan-900/60 shadow-frost-card">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-cyan-900/60 bg-cyan-950/40 font-mono text-xs text-cyan-300 uppercase">
+                <th class="py-4 px-6">Helyezés</th>
+                <th class="py-4 px-6">Játékos</th>
+                <th class="py-4 px-6">Rang</th>
+                <th id="metricHeaderTitle" class="py-4 px-6 text-right">Összesített Kills</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardRows" class="divide-y divide-cyan-900/30 text-sm">
+              <!-- JavaScript generálja dinamikusan -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="gyik" class="py-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-14">
+        <span class="text-xs font-mono font-bold tracking-widest text-cyan-400 uppercase">SEGÍTSÉGRE VAN SZÜKSÉGED?</span>
+        <h2 class="font-cinzel text-3xl sm:text-4xl font-bold text-white mt-1">GYAKRAN ISMÉTELT KÉRDÉSEK</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-2">Minden fontos információ a szerverhez való csatlakozáshoz és játékhoz.</p>
+      </div>
+
+      <div class="space-y-4" id="faqAccordion">
+        
+        <!-- GYIK 1 -->
+        <div class="frost-glass rounded-2xl border border-cyan-900/60 overflow-hidden">
+          <button onclick="toggleFaq(1)" class="w-full py-4 px-6 text-left flex items-center justify-between text-white font-bold text-sm sm:text-base hover:text-cyan-300 transition-colors">
+            <span>Hogyan tudok felcsatlakozni a szerverre?</span>
+            <i id="faqIcon-1" class="fa-solid fa-chevron-down text-cyan-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent-1" class="hidden px-6 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-cyan-900/40 pt-3">
+            Indítsd el a Minecraftot (bármelyik verzió 1.20 és 1.21.x között), kattints a <b>Többjátékos mód (Multiplayer)</b> menüre, majd a <b>Szerver hozzáadása (Add Server)</b> gombra. A szerver címe mezőbe másold be: <span class="text-cyan-300 font-mono font-bold">play.icemine.hu</span>. Ezután kattints a Kész gombra, és máris csatlakozhatsz!
+          </div>
+        </div>
+
+        <!-- GYIK 2 -->
+        <div class="frost-glass rounded-2xl border border-cyan-900/60 overflow-hidden">
+          <button onclick="toggleFaq(2)" class="w-full py-4 px-6 text-left flex items-center justify-between text-white font-bold text-sm sm:text-base hover:text-cyan-300 transition-colors">
+            <span>Szükséges eredeti Minecraft fiók a játékhoz?</span>
+            <i id="faqIcon-2" class="fa-solid fa-chevron-down text-cyan-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent-2" class="hidden px-6 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-cyan-900/40 pt-3">
+            Nem feltétlenül! Az IceMine szervere mind a hivatalos Microsoft Minecraft fiókokat, mind a tört (offline kliens) játékosokat fogadja. Belépéskor a tört klienssel játszóknak egyszerűen a <code class="bg-cyan-950 px-2 py-0.5 rounded text-cyan-300 font-mono">/register [jelszó] [jelszó]</code> parancsot kell használniuk az első alkalommal.
+          </div>
+        </div>
+
+        <!-- GYIK 3 -->
+        <div class="frost-glass rounded-2xl border border-cyan-900/60 overflow-hidden">
+          <button onclick="toggleFaq(3)" class="w-full py-4 px-6 text-left flex items-center justify-between text-white font-bold text-sm sm:text-base hover:text-cyan-300 transition-colors">
+            <span>Csatlakozhatok telefonról vagy konzolról (Bedrock Edition)?</span>
+            <i id="faqIcon-3" class="fa-solid fa-chevron-down text-cyan-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent-3" class="hidden px-6 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-cyan-900/40 pt-3">
+            Igen! A GeyserMC technológiánknak köszönhetően a Bedrock Edition játékosok (mobiltelefon, táblagép, Windows 10/11 Bedrock) is játszhatnak nálunk. Csatlakozási IP: <span class="text-cyan-300 font-mono font-bold">play.icemine.hu</span>, a Bedrock port pedig: <span class="text-cyan-300 font-mono font-bold">19132</span>.
+          </div>
+        </div>
+
+        <!-- GYIK 4 -->
+        <div class="frost-glass rounded-2xl border border-cyan-900/60 overflow-hidden">
+          <button onclick="toggleFaq(4)" class="w-full py-4 px-6 text-left flex items-center justify-between text-white font-bold text-sm sm:text-base hover:text-cyan-300 transition-colors">
+            <span>Mit tegyek, ha nem kaptam meg a vásárolt rangomat?</span>
+            <i id="faqIcon-4" class="fa-solid fa-chevron-down text-cyan-400 transition-transform duration-300"></i>
+          </button>
+          <div id="faqContent-4" class="hidden px-6 pb-5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-cyan-900/40 pt-3">
+            A rangok általában 1-5 percen belül automatikusan jóváíródnak a játékosfiókodon. Ha ez valamiért nem történt meg, lépj be a hivatalos Discord szerverünkre, és a <b>#ticket-támogatás</b> szobában nyiss egy hibajegyet a vásárlási azonosítóddal vagy a megadott e-mail címeddel!
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative rounded-3xl p-8 sm:p-12 overflow-hidden frost-glass border border-cyan-400/40 shadow-frost-glow flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-xl text-center md:text-left">
+          <div class="inline-flex items-center gap-2 text-cyan-400 text-xs font-mono mb-3">
+            <i class="fa-brands fa-discord text-base"></i> CSATLAKOZZ A DISCORD KÖZÖSSÉGÜNKHÖZ!
+          </div>
+          <h3 class="font-cinzel text-3xl sm:text-4xl font-black text-white mb-3">LEGYÉL TE IS ICEMINE TAG!</h3>
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+            Heti rang- és ládakulcs nyereményjátékok, bejelentések, frissítési hírek és aktív magyar Minecraft társaság vár éjjel-nappal.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <a href="https://discord.com" target="_blank" rel="noreferrer" class="px-8 py-4 rounded-2xl bg-[#5865F2] hover:bg-[#4752c4] text-white font-bold text-xs font-mono tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg hover:scale-105 active:scale-95">
+            <i class="fa-brands fa-discord text-lg"></i>
+            <span>DISCORD CSATLAKOZÁS</span>
+          </a>
+          <button onclick="copyServerIp()" class="px-8 py-4 rounded-2xl border border-cyan-400 text-cyan-300 hover:bg-cyan-400/10 font-bold text-xs font-mono tracking-wider flex items-center justify-center gap-2 transition-all">
+            <i class="fa-solid fa-gamepad"></i>
+            <span>SZERVER IP MÁSOLÁSA</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-cyan-900/50 bg-[#020712] py-12 relative z-10 text-slate-400 text-xs font-mono">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl p-0.5 bg-cyan-500/20 border border-cyan-400/40 overflow-hidden flex items-center justify-center shadow-frost-glow">
+          <img src="314B5AB8-48AF-40BD-9796-81D9F01145CA.jpg" alt="IceMine Network" class="w-full h-full object-cover rounded-lg">
+        </div>
+        <div>
+          <span class="font-cinzel text-white font-bold tracking-wider text-sm">ICEMINE NETWORK HUNGARY</span>
+          <p class="text-[11px] text-slate-500">A weboldal nem áll kapcsolatban a Mojang AB-vel vagy a Microsofttal.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-6 text-slate-400">
+        <a href="#kezdolap" class="hover:text-cyan-300 transition-colors">Kezdőlap</a>
+        <a href="#jatekmokok" class="hover:text-cyan-300 transition-colors">Játékmódok</a>
+        <a href="#rangok" class="hover:text-cyan-300 transition-colors">Webshop</a>
+        <a href="#ranglista" class="hover:text-cyan-300 transition-colors">Dicsőségcsarnok</a>
+        <a href="javascript:void(0)" onclick="openRulesModal()" class="hover:text-cyan-300 transition-colors">Szerver Szabályzat</a>
+      </div>
+
+      <div class="text-slate-500 text-center md:text-right">
+        <p>&copy; 2026 IceMine.hu. Minden jog fenntartva.</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Webshop Rang Előnyök & Vásárlás Modal -->
+  <div id="perkModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="frost-glass rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-cyan-400/60 shadow-frost-glow-lg transform scale-95 transition-transform duration-300" id="perkModalCard">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-cyan-900/60 mb-5">
+        <div class="flex items-center gap-3">
+          <img src="314B5AB8-48AF-40BD-9796-81D9F01145CA.jpg" alt="IceMine" class="w-10 h-10 rounded-xl object-cover border border-cyan-400/40 shadow-sm">
+          <div>
+            <span class="text-[11px] font-mono text-cyan-400 uppercase tracking-widest font-bold">RANG INFORMÁCIÓ</span>
+            <h3 id="modalRankName" class="font-cinzel text-2xl font-black text-white">FROST RANG</h3>
+          </div>
+        </div>
+        <button onclick="closePerkModal()" class="w-8 h-8 rounded-xl bg-cyan-950/80 text-cyan-300 hover:text-white flex items-center justify-center border border-cyan-500/20">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300 mb-4">A rang megvásárlásával az alábbi előnyök aktiválódnak örökre a szerveren:</p>
+      
+      <div id="modalPerkList" class="space-y-2.5 mb-6 text-xs text-slate-200 font-mono max-h-48 overflow-y-auto pr-1">
+        <!-- Javascript tölti fel -->
+      </div>
+
+      <!-- Felhasználónév bekérés -->
+      <div class="mb-5 bg-cyan-950/40 p-3.5 rounded-2xl border border-cyan-900/60">
+        <label for="mcUsernameInput" class="block text-[11px] font-mono text-cyan-300 uppercase font-bold mb-1.5">
+          <i class="fa-solid fa-user mr-1"></i> Minecraft Felhasználóneved:
+        </label>
+        <input type="text" id="mcUsernameInput" placeholder="Pl. Steve123" class="w-full bg-[#020914] border border-cyan-500/40 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-mono">
+        <span id="usernameError" class="text-[10px] text-rose-400 font-mono mt-1 hidden">Kérjük, add meg a játékbeli nevedet!</span>
+      </div>
+
+      <div class="flex items-center justify-between pt-4 border-t border-cyan-900/60">
+        <div>
+          <span class="text-[10px] uppercase font-mono text-slate-400 block">Fizetendő összeg</span>
+          <span id="modalRankPrice" class="text-2xl font-black font-mono text-cyan-300">1.490 Ft</span>
+        </div>
+        <button onclick="proceedToCheckout()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-sky-400 hover:from-cyan-300 hover:to-sky-300 text-slate-950 font-black text-xs font-mono tracking-wider transition-all shadow-md">
+          TOVÁBB A FIZETÉSHEZ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Játékmód Részletes Modal -->
+  <div id="modeDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="frost-glass rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-cyan-400/60 shadow-frost-glow-lg transform scale-95 transition-transform duration-300" id="modeDetailCard">
+      <div class="flex items-center justify-between pb-4 border-b border-cyan-900/60 mb-5">
+        <div>
+          <span class="text-[11px] font-mono text-cyan-400 uppercase tracking-widest font-bold">JÁTÉKMÓD ÁTTEKINTÉS</span>
+          <h3 id="modeDetailTitle" class="font-cinzel text-2xl font-black text-white">Frost SMP</h3>
+        </div>
+        <button onclick="closeModeDetail()" class="w-8 h-8 rounded-xl bg-cyan-950/80 text-cyan-300 hover:text-white flex items-center justify-center border border-cyan-500/20">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p id="modeDetailSubtitle" class="text-xs font-mono text-cyan-300 mb-2 font-semibold"></p>
+      <p id="modeDetailDescription" class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-5"></p>
+
+      <h4 class="text-xs font-mono uppercase font-bold text-white mb-2.5">Kiemelt tulajdonságok:</h4>
+      <div id="modeDetailList" class="space-y-2 mb-6 text-xs text-slate-200 font-mono"></div>
+
+      <div class="flex justify-end pt-4 border-t border-cyan-900/60">
+        <button onclick="copyServerIp(); closeModeDetail();" class="px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs font-mono tracking-wider">
+          <i class="fa-solid fa-play mr-1.5"></i> CSATLAKOZÁS A SZERVERRE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Szerver Szabályzat Modal -->
+  <div id="rulesModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="frost-glass rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-cyan-400/50 shadow-frost-glow-lg max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-cyan-900/60 mb-5">
+        <div>
+          <span class="text-xs font-mono text-cyan-400 uppercase tracking-widest font-bold">KÖZÖSSÉGI IRÁNYELVEK</span>
+          <h3 class="font-cinzel text-2xl font-bold text-white">ICEMINE SZERVER SZABÁLYZAT</h3>
+        </div>
+        <button onclick="closeRulesModal()" class="w-8 h-8 rounded-xl bg-cyan-950/80 text-cyan-300 hover:text-white flex items-center justify-center border border-cyan-500/20">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <div class="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-900/60">
+          <h4 class="font-bold text-white text-sm mb-1 text-cyan-300 font-mono">1. Csalások és Módosított Kliensek Tilosak</h4>
+          <p>Minden olyan módosítás, amely jogosulatlan előnyt nyújt (X-Ray, KillAura, Fly, SpeedHack, Baritone botok) azonnali és végleges kitiltást von maga után. Engedélyezett modok: Sodium, Iris Shaders, OptiFine, Armor HUD, Minimap (játékos jelölők nélkül).</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-900/60">
+          <h4 class="font-bold text-white text-sm mb-1 text-cyan-300 font-mono">2. Chat Kulturált Használata</h4>
+          <p>Tilos a káromkodás, más játékosok zaklatása, spammelése, fenyegetése vagy más szerverek hirdetése. Legyünk egymással tisztelettudóak!</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-900/60">
+          <h4 class="font-bold text-white text-sm mb-1 text-cyan-300 font-mono">3. Hibák Kihasználása (Bug Abuse)</h4>
+          <p>Tárgymásolás (dupe), pályahatárokon való átjutás vagy rendszerhibák kihasználása tilos. Ha hibát találsz, jelezd a Discordon a staff csapatnak jutalomért!</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-900/60">
+          <h4 class="font-bold text-white text-sm mb-1 text-cyan-300 font-mono">4. Valódi Pénzes Kereskedés (RWT)</h4>
+          <p>Tilos a játékbeli javak, pénz vagy területek valódi pénzért vagy egyéb külső értéktárgyért történő adásvétele a hivatalos webshopon kívül.</p>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-cyan-900/60 flex justify-end">
+        <button onclick="closeRulesModal()" class="px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs font-mono">
+          MEGÉRTETTEM ÉS ELFOGADOM
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Web Audio API szintetizált hangeffektek külső függőség nélkül */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        initAudioContext();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          // Éles, modern kattintó hang
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(620, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.04);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'ice-chime') {
+          // Jégtörés kristálycsengés
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(950, now);
+          osc.frequency.linearRampToValueAtTime(1480, now + 0.09);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.24);
+        } else if (type === 'success') {
+          // Minecraft XP gömb felvétel akkord szimuláció
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.07); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.14); // G5
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        }
+      } catch (e) {
+        console.warn('Audio API inicializálási hiba:', e);
+      }
+    }
+
+    // Hang be/kikapcsolás gomb
+    const soundToggleBtn = document.getElementById('soundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    soundToggleBtn.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundEnabled) {
+        soundIcon.className = "fa-solid fa-volume-high text-lg";
+        soundToggleBtn.classList.add('text-cyan-300');
+        soundToggleBtn.classList.remove('text-slate-500');
+        playSound('click');
+        showToast('HANG BEKAPCSOLVA', 'A szintetizált hangeffektek aktívak.');
+      } else {
+        soundIcon.className = "fa-solid fa-volume-xmark text-lg";
+        soundToggleBtn.classList.remove('text-cyan-300');
+        soundToggleBtn.classList.add('text-slate-500');
+        showToast('HANG NÉMÍTVA', 'A hangeffektek elnémítva.');
+      }
+    });
+
+    // Szerver IP Másolás funkció
+    function copyServerIp() {
+      playSound('ice-chime');
+      const ip = "play.icemine.hu";
+
+      // Vágólapra másolás (kompatibilis módszer iFrame-ben is)
+      const el = document.createElement('textarea');
+      el.value = ip;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      try {
+        document.execCommand('copy');
+        showToast('SZERVER IP MÁSOLVA!', 'play.icemine.hu bemásolható a Minecraftba!');
+        setTimeout(() => playSound('success'), 100);
+      } catch (err) {
+        showToast('IP: play.icemine.hu', 'Másold ki manuálisan a csatlakozáshoz!');
+      }
+      document.body.removeChild(el);
+    }
+
+    // Toast Értesítés megjelenítő
+    let toastTimeout;
+    function showToast(title, body) {
+      const toast = document.getElementById('toastNotification');
+      const tTitle = document.getElementById('toastTitle');
+      const tBody = document.getElementById('toastBody');
+
+      tTitle.innerText = title;
+      tBody.innerText = body;
+
+      toast.classList.remove('opacity-0', 'translate-x-40', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-x-0');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-x-40', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-x-0');
+      }, 3500);
+    }
+
+    const leaderboardData = {
+      kills: [
+        { rank: 1, name: "FrostBite_HU", tag: "GLACIÁLIS", score: "4,821 Kills", skin: "MHF_Steve" },
+        { rank: 2, name: "JegesHarcos", tag: "HÓVIHAR", score: "4,190 Kills", skin: "MHF_Alex" },
+        { rank: 3, name: "VortexSnow", tag: "GLACIÁLIS", score: "3,842 Kills", skin: "Herobrine" },
+        { rank: 4, name: "SubZeroHun", tag: "FROST", score: "3,110 Kills", skin: "Notch" },
+        { rank: 5, name: "KlanVezer_01", tag: "JÁTÉKOS", score: "2,760 Kills", skin: "jeb_" }
+      ],
+      balance: [
+        { rank: 1, name: "GlacierTycoon", tag: "GLACIÁLIS", score: "68,450,000 $", skin: "MHF_Steve" },
+        { rank: 2, name: "BanyaKiraly", tag: "HÓVIHAR", score: "45,210,000 $", skin: "MHF_Alex" },
+        { rank: 3, name: "Kincsvadasz_HU", tag: "GLACIÁLIS", score: "34,800,000 $", skin: "Herobrine" },
+        { rank: 4, name: "EzustPehely", tag: "FROST", score: "22,100,000 $", skin: "Notch" },
+        { rank: 5, name: "SmaragdDealer", tag: "JÁTÉKOS", score: "18,920,000 $", skin: "jeb_" }
+      ],
+      playtime: [
+        { rank: 1, name: "OrokFagyos", tag: "GLACIÁLIS", score: "1,248 Óra", skin: "MHF_Steve" },
+        { rank: 2, name: "VortexSnow", tag: "GLACIÁLIS", score: "1,080 Óra", skin: "Herobrine" },
+        { rank: 3, name: "HoviharMesters", tag: "HÓVIHAR", score: "940 Óra", skin: "MHF_Alex" },
+        { rank: 4, name: "KekHold99", tag: "FROST", score: "812 Óra", skin: "Notch" },
+        { rank: 5, name: "MagyarPro99", tag: "JÁTÉKOS", score: "690 Óra", skin: "jeb_" }
+      ]
+    };
+
+    function renderLeaderboard(category) {
+      const tbody = document.getElementById('leaderboardRows');
+      const headerTitle = document.getElementById('metricHeaderTitle');
+
+      if (category === 'kills') headerTitle.innerText = "ÖSSZESÍTETT KILLS";
+      else if (category === 'balance') headerTitle.innerText = "SZÁMLAEGYENLEG";
+      else headerTitle.innerText = "ÖSSZES JÁTÉKIDŐ";
+
+      const list = leaderboardData[category];
+      tbody.innerHTML = '';
+
+      list.forEach(player => {
+        let tagClass = "text-slate-400 bg-slate-800/80 border-slate-700";
+        if (player.tag === "GLACIÁLIS") tagClass = "text-indigo-300 bg-indigo-950/70 border-indigo-500/50";
+        if (player.tag === "HÓVIHAR") tagClass = "text-cyan-300 bg-cyan-950/70 border-cyan-500/50";
+        if (player.tag === "FROST") tagClass = "text-sky-300 bg-sky-950/70 border-sky-500/50";
+
+        let rankBadge = `<span class="font-mono font-bold text-slate-400">#${player.rank}</span>`;
+        if (player.rank === 1) rankBadge = `<span class="w-6 h-6 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-crown text-[10px]"></i></span>`;
+        if (player.rank === 2) rankBadge = `<span class="w-6 h-6 rounded-full bg-slate-300 text-slate-950 flex items-center justify-center font-bold text-xs">2</span>`;
+        if (player.rank === 3) rankBadge = `<span class="w-6 h-6 rounded-full bg-amber-700 text-white flex items-center justify-center font-bold text-xs">3</span>`;
+
+        const row = document.createElement('tr');
+        row.className = "hover:bg-cyan-950/20 transition-colors";
+        row.innerHTML = `
+          <td class="py-4 px-6">${rankBadge}</td>
+          <td class="py-4 px-6 flex items-center gap-3">
+            <img src="https://mc-heads.net/avatar/${player.skin}/32" alt="${player.name}" class="w-8 h-8 rounded-lg border border-cyan-500/30 bg-slate-800" onerror="this.src='https://placehold.co/32x32/082f49/38bdf8?text=MC'">
+            <span class="font-bold text-white font-mono">${player.name}</span>
+          </td>
+          <td class="py-4 px-6">
+            <span class="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded border ${tagClass}">${player.tag}</span>
+          </td>
+          <td class="py-4 px-6 text-right font-mono font-bold text-cyan-300">${player.score}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function switchLeaderboard(cat) {
+      playSound('click');
+      const tabs = ['tabKills', 'tabBalance', 'tabPlaytime'];
+      tabs.forEach(t => {
+        const el = document.getElementById(t);
+        el.className = "px-4 py-2 rounded-xl text-slate-300 hover:text-white transition-all";
+      });
+
+      if (cat === 'kills') document.getElementById('tabKills').className = "px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold transition-all";
+      if (cat === 'balance') document.getElementById('tabBalance').className = "px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold transition-all";
+      if (cat === 'playtime') document.getElementById('tabPlaytime').className = "px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-bold transition-all";
+
+      renderLeaderboard(cat);
+    }
+
+    // Rang Előnyök Modal Megnyitása
+    function openPerkModal(rankName, price, perks) {
+      playSound('click');
+      document.getElementById('modalRankName').innerText = rankName.toUpperCase();
+      document.getElementById('modalRankPrice').innerText = price;
+      document.getElementById('usernameError').classList.add('hidden');
+      document.getElementById('mcUsernameInput').value = '';
+
+      const listContainer = document.getElementById('modalPerkList');
+      listContainer.innerHTML = '';
+      perks.forEach(p => {
+        const item = document.createElement('div');
+        item.className = "flex items-center gap-2 p-2 rounded-xl bg-cyan-950/40 border border-cyan-900/50";
+        item.innerHTML = `<i class="fa-solid fa-snowflake text-cyan-400 text-xs"></i> <span>${p}</span>`;
+        listContainer.appendChild(item);
+      });
+
+      const modal = document.getElementById('perkModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100');
+      document.getElementById('perkModalCard').classList.remove('scale-95');
+      document.getElementById('perkModalCard').classList.add('scale-100');
+    }
+
+    function closePerkModal() {
+      playSound('click');
+      const modal = document.getElementById('perkModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('opacity-100');
+      document.getElementById('perkModalCard').classList.add('scale-95');
+      document.getElementById('perkModalCard').classList.remove('scale-100');
+    }
+
+    function proceedToCheckout() {
+      const username = document.getElementById('mcUsernameInput').value.trim();
+      const err = document.getElementById('usernameError');
+      if (!username) {
+        err.classList.remove('hidden');
+        playSound('click');
+        return;
+      }
+      err.classList.add('hidden');
+      playSound('success');
+      showToast('ÁTIRÁNYÍTÁS FIZETÉSHEZ...', `${username} fiókjára a csomag a kosárba került!`);
+      setTimeout(closePerkModal, 900);
+    }
+
+    // Játékmód Modal Funkciók
+    function openModeDetail(title, subtitle, description, features) {
+      playSound('click');
+      document.getElementById('modeDetailTitle').innerText = title;
+      document.getElementById('modeDetailSubtitle').innerText = subtitle;
+      document.getElementById('modeDetailDescription').innerText = description;
+
+      const listEl = document.getElementById('modeDetailList');
+      listEl.innerHTML = '';
+      features.forEach(f => {
+        const item = document.createElement('div');
+        item.className = "flex items-center gap-2 p-2 rounded-xl bg-cyan-950/40 border border-cyan-900/50";
+        item.innerHTML = `<i class="fa-solid fa-check text-cyan-400 text-xs"></i> <span>${f}</span>`;
+        listEl.appendChild(item);
+      });
+
+      const modal = document.getElementById('modeDetailModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100');
+      document.getElementById('modeDetailCard').classList.remove('scale-95');
+      document.getElementById('modeDetailCard').classList.add('scale-100');
+    }
+
+    function closeModeDetail() {
+      playSound('click');
+      const modal = document.getElementById('modeDetailModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('opacity-100');
+      document.getElementById('modeDetailCard').classList.add('scale-95');
+      document.getElementById('modeDetailCard').classList.remove('scale-100');
+    }
+
+    // Szabályzat Modal
+    function openRulesModal() {
+      playSound('click');
+      const modal = document.getElementById('rulesModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100');
+    }
+
+    function closeRulesModal() {
+      playSound('click');
+      const modal = document.getElementById('rulesModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('opacity-100');
+    }
+
+    // GYIK Nyitás/Csukás (Accordion)
+    function toggleFaq(index) {
+      playSound('click');
+      const content = document.getElementById(`faqContent-${index}`);
+      const icon = document.getElementById(`faqIcon-${index}`);
+
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        content.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
+
+    // Élő Szimulált Szerver Státusz Frissítés
+    function updateServerStatus() {
+      const base = 380;
+      const variation = Math.floor(Math.sin(Date.now() / 14000) * 16) + Math.floor(Math.random() * 5);
+      const ping = 17 + Math.floor(Math.random() * 4);
+
+      const pElem = document.getElementById('livePlayerCount');
+      if (pElem) pElem.innerText = (base + variation);
+
+      const pingElem = document.getElementById('livePing');
+      if (pingElem) pingElem.innerText = `${ping} ms`;
+    }
+    setInterval(updateServerStatus, 4000);
+
+    const canvas = document.getElementById('snow-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    class SnowParticle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * -height;
+        this.radius = Math.random() * 2.2 + 0.8;
+        this.speed = Math.random() * 1.3 + 0.5;
+        this.drift = (Math.random() - 0.5) * 0.8;
+        this.alpha = Math.random() * 0.7 + 0.2;
+      }
+
+      update() {
+        this.y += this.speed;
+        this.x += this.drift + Math.sin(this.y * 0.006) * 0.35;
+
+        if (this.y > height) {
+          this.reset();
+          this.y = -8;
+        }
+        if (this.x > width) this.x = 0;
+        if (this.x < 0) this.x = width;
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(186, 230, 253, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initSnowflakes() {
+      resizeCanvas();
+      particles = [];
+      const count = Math.min(Math.floor(window.innerWidth * 0.08), 85);
+      for (let i = 0; i < count; i++) {
+        particles.push(new SnowParticle());
+      }
+    }
+
+    function renderSnow() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+      requestAnimationFrame(renderSnow);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initSnowflakes();
+      renderSnow();
+      renderLeaderboard('kills');
+      updateServerStatus();
+    });
+  </script>
+</body>
+</html>
